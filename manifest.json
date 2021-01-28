@@ -1,0 +1,7 @@
+{
+	"name": "CrashRecover",
+	"version": "0.0.1",
+	"description": "Recovers from crashes if it's possible.",
+	"author": "Strencher",
+	"license": "MIT"
+}
