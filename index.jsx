@@ -28,7 +28,10 @@ export default class CrashRecover extends Plugin {
 
 		patch("crash-recover", ErrorBoundary.prototype, "render", function (_, ret) {
 			if (!this.state.error) {
-				if(timesCrashed()) timesCrashed(0);
+				if (timesCrashed()) {
+					timesCrashed(0);
+					self.log("Successfully recovered from crash.");
+				}
 				return ret;
 			}
 
@@ -53,29 +56,43 @@ export default class CrashRecover extends Plugin {
 	closeEverything() {
 		return new Promise(resolve => {
 			FluxDispatcher.wait(() => {
+				const failed = [];
 				try {
 					ContextMenuActions.closeContextMenu();
-				} catch {}
+				} catch {
+					failed.push("Close ContextMenus");
+				}
 
 				try {
 					ModalStack.popAll();
-				} catch {}
+				} catch {
+					failed.push("Close Modals from ModalStack");
+				}
 
 				try {
 					LayerManager.popAllLayers();
-				} catch {}
+				} catch {
+					failed.push("Close All Layers");
+				}
 
 				try {
 					PopoutStack.closeAll();
-				} catch {}
+				} catch {
+					failed.push("Close All Popouts");
+				}
 
 				try {
 					ModalActions.useModalsStore.setState(() => ({default: []}));
-				} catch {}
+				} catch {
+					failed.push("Close All Modals from ModalsApi");
+				}
 
 				try {
 					if (this.timesCrashed > 4) NavigationUtils.transitionTo("/channels/@me");
-				} catch {}
+				} catch {
+					failed.push("Transistion to home.");
+				}
+				if (failed.length) this.error(`Failed to executing the following ${failed.length > 1 ? "commands" : "command"}: ${failed.join(", ")}`);
 
 				resolve();
 			});
