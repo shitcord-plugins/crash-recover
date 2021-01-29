@@ -10,6 +10,6 @@ export default class MessageLog extends React.Component {
 	}
 
 	render() {
-		return <div className={joinClassNames("message-log", classes.thin)}>{this.state.logs.map(e => <div class="error-message">{e}</div>)}</div>
+		return <div className={joinClassNames("message-log", classes.thin)}>{this.state.logs.map(e => <div class="error-message">{e}</div>)}</div>;
 	}
 }
